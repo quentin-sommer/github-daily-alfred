@@ -1,0 +1,5 @@
+node_modules
+dist
+tmp
+github_token.txt
+github_username.txt
