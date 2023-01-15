@@ -93,7 +93,6 @@ function fuzzyMatchRecursive(
 
   // Recursion params
   let recursiveMatch = false
-  let bestRecursiveMatches: number[] = []
   let bestRecursiveScore = 0
 
   // Loop through pattern and str looking for a match.
@@ -130,7 +129,6 @@ function fuzzyMatchRecursive(
       if (matched) {
         // Pick best recursive score.
         if (!recursiveMatch || recursiveScore > bestRecursiveScore) {
-          bestRecursiveMatches = [...recursiveMatches]
           bestRecursiveScore = recursiveScore
         }
         recursiveMatch = true
