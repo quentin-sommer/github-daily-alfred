@@ -1,11 +1,42 @@
-import { Octokit } from "octokit"
+import { logger } from "./logger"
+import { getConfig } from "./config"
+import https, { RequestOptions } from "https"
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN
-const GITHUB_USERNAME = process.env.GITHUB_USERNAME
-const ghClient = new Octokit({
-  auth: GITHUB_TOKEN,
-  userAgent: "qsmr-github-daily",
-})
+async function graphqlRequest(query: string): Promise<unknown> {
+  const payload = JSON.stringify({ query })
+  const options: RequestOptions = {
+    hostname: "api.github.com",
+    port: 443,
+    path: "/graphql",
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${getConfig().githubToken}`,
+      "User-Agent": "qsmr-github-daily",
+      "Content-Type": "application/json",
+      "Content-Length": Buffer.byteLength(payload),
+    },
+  }
+
+  const response = await new Promise<string>((resolve, reject) => {
+    let body = ""
+    const req = https.request(options, (res) => {
+      res.setEncoding("utf8")
+      res.on("data", (chunk) => (body += chunk))
+      res.on("end", () => {
+        if (res.statusCode !== undefined && res.statusCode < 400) {
+          resolve(body)
+        } else {
+          reject(body)
+        }
+      })
+    })
+    req.on("error", (e) => reject(e))
+    req.write(payload)
+    req.end()
+  })
+
+  return JSON.parse(response).data
+}
 
 const PRS_RESULTS_TO_FETCH = 100
 const REPOS_RESULTS_TO_FETCH = 100
@@ -54,10 +85,10 @@ type Prs = {
   url: string
 }[]
 export async function getMyPrs(): Promise<Prs> {
-  const response = (await ghClient.graphql(myPrsQuery)) as MyPrsQueryResponse
+  const response = (await graphqlRequest(myPrsQuery)) as MyPrsQueryResponse
 
   if (response.viewer.pullRequests.totalCount > PRS_RESULTS_TO_FETCH) {
-    console.error(
+    logger().info(
       `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${response.viewer.pullRequests.totalCount}`
     )
   }
@@ -72,7 +103,9 @@ export async function getMyPrs(): Promise<Prs> {
 const involvedPrsQuery = `{
   search(
     first: ${PRS_RESULTS_TO_FETCH}
-    query: "is:pr state:open involves:${GITHUB_USERNAME} sort:updated"
+    query: "is:pr state:open involves:${
+      getConfig().githubUsername
+    } sort:updated"
     type: ISSUE    
   ) {
     issueCount
@@ -96,17 +129,16 @@ type InvolvedPrsQueryResponse = {
   }
 }
 export async function getInvolvedPrs(): Promise<Prs> {
-  const res2 = (await ghClient.graphql(
+  const res = (await graphqlRequest(
     involvedPrsQuery
   )) as InvolvedPrsQueryResponse
-
-  const prs = res2.search.nodes
-  if (res2.search.issueCount > PRS_RESULTS_TO_FETCH) {
-    console.error(
-      `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${res2.search.issueCount}`
+  if (res.search.issueCount > PRS_RESULTS_TO_FETCH) {
+    logger().info(
+      `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${res.search.issueCount}`
     )
   }
-  return prs.map((pr) => ({
+
+  return res.search.nodes.map((pr) => ({
     title: pr.title,
     repositoryFullName: pr.repository.nameWithOwner,
     number: pr.number,
@@ -165,14 +197,15 @@ export async function getRepos(): Promise<Repos> {
 
   const repos: Repos = []
   while (hasNextPage) {
-    const res = (await ghClient.graphql(
+    const res = (await graphqlRequest(
       getReposQuery(cursor)
     )) as ReposQueryResponse
+
     const data = res.viewer.repositories
     repos.push(...data.nodes)
     cursor = data.pageInfo.endCursor
     hasNextPage = data.pageInfo.hasNextPage
-    console.error(data.pageInfo)
+    logger().info(data.pageInfo)
   }
 
   return repos

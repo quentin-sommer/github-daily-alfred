@@ -2,15 +2,16 @@ import { getInvolvedPrs, getMyPrs, getRepos } from "./github"
 import { Cache } from "./cache"
 import cleanStack from "clean-stack"
 import Fuse from "fuse.js"
-import { Command } from "./index"
-import { isRunning, runInBackground } from "./background"
-import { Maybe } from "./utils"
+import type { Command } from "./index"
+import { deleteBackgroundLock, isRunning, runInBackground } from "./background"
+import type { Maybe } from "./utils"
+import { logger } from "./logger"
+import { getConfig } from "./config"
 
 function minutesDuration(minutes: number) {
   return minutes * 60 * 1000
 }
 
-const CACHE_DIR = process.env.alfred_workflow_cache
 const MAX_ITEMS_TO_RETURN = 100
 
 export async function executeFetchCommand(
@@ -20,28 +21,35 @@ export async function executeFetchCommand(
   filter: Maybe<string>,
   fetcher: () => Promise<Item[]>
 ) {
-  if (CACHE_DIR === undefined) {
-    outputError("alfred_workflow_data is not set")
-    process.exit(1)
-  }
-  const cache = new Cache<Item[]>(CACHE_DIR)
+  const cacheDir = getConfig().alfredWorkflowCache
+  const cache = new Cache<Item[]>(cacheDir)
   let shouldRerun = false
   let items: Item[]
 
   if (runningInBackground) {
+    logger().error("here2")
+
     items = await fetcher()
+    logger().error("here3")
+
     cache.set(command, items, cacheTTLMs)
+    logger().error("here4")
+
+    deleteBackgroundLock(command, cacheDir)
+    logger().error("here5")
+
+    process.exit(0)
   } else {
     const cached = cache.get(command)
     if (cached !== undefined) {
       items = cached.value
       if (cached.stale) {
         shouldRerun = true
-        if (isRunning(command, CACHE_DIR)) {
-          console.error(`Already updating in the background`)
+        if (isRunning(command, cacheDir)) {
+          logger().info(`Already updating in the background`)
         } else {
-          console.error(`Updating stale ${command} in background.`)
-          runInBackground(command, CACHE_DIR)
+          logger().info(`Updating stale ${command} in background.`)
+          runInBackground(command, cacheDir)
         }
       }
     } else {
@@ -55,8 +63,8 @@ export async function executeFetchCommand(
         ],
         true
       )
-      runInBackground(command, CACHE_DIR)
-      console.error(`Fetching ${command} in background.`)
+      runInBackground(command, cacheDir)
+      logger().info(`Fetching ${command} in background.`)
       return
     }
   }
@@ -66,12 +74,14 @@ export async function executeFetchCommand(
     return
   }
 
-  console.error("Filtering with " + filter)
+  logger().info("Filtering with " + filter)
   const options: Fuse.IFuseOptions<Item> = {
     keys: ["title"],
     includeScore: true,
     shouldSort: true,
     sortFn: (a, b) => b.score - a.score,
+    //    threshold: 0.1,
+    ignoreLocation: true,
   }
 
   const fuse = new Fuse(items, options)
@@ -117,7 +127,10 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
     minutesDuration(1),
     filter,
     async () => {
+      logger().error("inside fetch reviews1")
       const prs = await getInvolvedPrs()
+      logger().error("inside fetch reviews2")
+
       const items: Item[] = prs.map((pr) => ({
         uid: pr.number.toString(),
         title: pr.title,
@@ -128,6 +141,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
         },
         valid: true,
       }))
+      logger().error("inside fetch reviews3")
 
       return items
     }
@@ -139,7 +153,7 @@ type Item = {
   title: string
   subtitle: string
   arg?: string
-  icon: {
+  icon?: {
     path: string
   }
   text?: Record<string, unknown>
@@ -170,7 +184,36 @@ export async function repos(runningInBackground: boolean, filter?: string) {
   )
 }
 
-export async function menu(runningInBackground: boolean, _filter?: string) {}
+export async function menu(_runningInBackground: boolean, _filter?: string) {
+  const items: Item[] = [
+    {
+      title: "Data-science project",
+      arg: "https://github.com/orgs/TransitApp/projects/12",
+      subtitle: "https://github.com/orgs/TransitApp/projects/12",
+    },
+    {
+      title: "Notifications",
+      arg: "https://github.com/notifications?query=is:unread",
+      subtitle: "https://github.com/notifications?query=is:unread",
+    },
+    {
+      title: "Pull Requests",
+      arg: "https://github.com/pulls",
+      subtitle: "https://github.com/pulls",
+    },
+    {
+      title: "Dashboard",
+      arg: "https://github.com",
+      subtitle: "https://github.com",
+    },
+    {
+      title: "Issues",
+      arg: "https://github.com/issues",
+      subtitle: "https://github.com/issues",
+    },
+  ]
+  output(items)
+}
 
 export function output(data: Item[], reRun: boolean = false) {
   if (data.length === 0) {

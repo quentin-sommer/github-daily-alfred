@@ -1,8 +1,9 @@
 import { spawn } from "child_process"
 import { resolve } from "path"
-import { Command } from "./index"
+import type { Command } from "./index"
 import { readFileSync, rmSync, writeFileSync } from "fs"
 import { errorIsFileNotExists } from "./utils"
+import { logger } from "./logger"
 
 const ENTRYPOINT = resolve(__dirname, "index.js")
 export function runInBackground(command: Command, cacheDir: string) {
@@ -17,7 +18,7 @@ export function runInBackground(command: Command, cacheDir: string) {
   bgProcess.unref()
 
   if (bgProcess.pid === undefined) {
-    console.error(`Failed to spawn background task ${command}`)
+    logger().info(`Failed to spawn background task ${command}`)
     return
   }
   const taskFile = getTaskFile(command, cacheDir)
@@ -26,7 +27,7 @@ export function runInBackground(command: Command, cacheDir: string) {
     pid: bgProcess.pid,
   }
   writeFileSync(taskFile, JSON.stringify(data))
-  console.error(`Spawned background task ${command} ${bgProcess.pid}`)
+  logger().info(`Spawned background task ${command} ${bgProcess.pid}`)
 }
 
 type RunningTaskFile = {
@@ -55,8 +56,13 @@ export function isRunning(command: Command, cacheDir: string): boolean {
     if (errorIsFileNotExists(err)) {
       return false
     }
-    console.error(`Error while getting task file ${taskFile}: ${err}`)
+    logger().info(`Error while getting task file ${taskFile}: ${err}`)
     rmSync(taskFile, { force: true })
     return false
   }
+}
+
+export function deleteBackgroundLock(command: Command, cacheDir: string) {
+  const taskFile = getTaskFile(command, cacheDir)
+  rmSync(taskFile, { force: true })
 }

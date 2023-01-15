@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "fs"
 import { resolve } from "path"
+import { logger } from "./logger"
 
 type CachedValue<T> = {
   maxAge: number
@@ -17,6 +18,7 @@ export class Cache<T> {
 
   get(key: string): { value: T; stale: boolean } | undefined {
     const filepath = this.getFilePath(key)
+    logger().info("get", filepath)
     try {
       const content = readFileSync(filepath, { encoding: "utf-8" })
       const parsed = JSON.parse(content) as CachedValue<T>
@@ -30,13 +32,14 @@ export class Cache<T> {
         return undefined
       }
 
-      console.error(`Error while getting cached file ${filepath}: ${err}`)
+      logger().info(`Error while getting cached file ${filepath}: ${err}`)
       rmSync(filepath, { force: true })
 
       return undefined
     }
   }
   set(key: string, value: T, ttlMs: number): boolean {
+    logger().info("set", this.getFilePath(key))
     try {
       const cachedValue: CachedValue<T> = {
         maxAge: Date.now() + ttlMs,
@@ -46,7 +49,7 @@ export class Cache<T> {
       writeFileSync(this.getFilePath(key), content)
       return true
     } catch (err) {
-      console.error(err)
+      logger().info(err)
       return false
     }
   }
