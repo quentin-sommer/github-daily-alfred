@@ -1,12 +1,12 @@
 import { getInvolvedPrs, getMyPrs, getRepos } from "./github"
 import { Cache } from "./cache"
 import cleanStack from "clean-stack"
-import Fuse from "fuse.js"
 import type { Command } from "./index"
 import { deleteBackgroundLock, isRunning, runInBackground } from "./background"
 import type { Maybe } from "./utils"
 import { logger } from "./logger"
 import { getConfig } from "./config"
+import { fuzzyMatch } from "./fuzzySearch"
 
 function minutesDuration(minutes: number) {
   return minutes * 60 * 1000
@@ -75,20 +75,18 @@ export async function executeFetchCommand(
   }
 
   logger().info("Filtering with " + filter)
-  const options: Fuse.IFuseOptions<Item> = {
-    keys: ["title"],
-    includeScore: true,
-    shouldSort: true,
-    sortFn: (a, b) => b.score - a.score,
-    //    threshold: 0.1,
-    ignoreLocation: true,
-  }
-
-  const fuse = new Fuse(items, options)
-  const result = fuse.search(filter)
+  const filtered = items
+    .reduce<{ item: Item; score: number }[]>((acc, item) => {
+      const [matched, score] = fuzzyMatch(filter, item.title)
+      if (matched) {
+        acc.push({ score, item })
+      }
+      return acc
+    }, [])
+    .sort((a, b) => b.score - a.score)
 
   output(
-    result.slice(0, MAX_ITEMS_TO_RETURN).map((item) => {
+    filtered.slice(0, MAX_ITEMS_TO_RETURN).map((item) => {
       item.item.title = item.score?.toFixed(2) + " " + item.item.title
       return item.item
     }),

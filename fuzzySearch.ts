@@ -14,6 +14,8 @@
 //   J�rgen Tjern� - async helper
 //   Anurag Awasthi - updated to 0.2.0
 
+// Lifted from https://github.com/forrestthewoods/lib_fts
+
 const SEQUENTIAL_BONUS = 15 // bonus for adjacent matches
 const SEPARATOR_BONUS = 30 // bonus if match occurs after a separator
 const CAMEL_BONUS = 30 // bonus if match is uppercase and prev is lower
@@ -24,30 +26,11 @@ const MAX_LEADING_LETTER_PENALTY = -15 // maximum penalty for leading letters
 const UNMATCHED_LETTER_PENALTY = -1
 
 /**
- * Returns true if each character in pattern is found sequentially within str
- */
-function fuzzyMatchSimple(pattern: string, str: string) {
-  let patternIdx = 0
-  let strIdx = 0
-  const patternLength = pattern.length
-  const strLength = str.length
-
-  while (patternIdx != patternLength && strIdx != strLength) {
-    const patternChar = pattern.charAt(patternIdx).toLowerCase()
-    const strChar = str.charAt(strIdx).toLowerCase()
-    if (patternChar == strChar) ++patternIdx
-    ++strIdx
-  }
-
-  return patternLength != 0 && strLength != 0 && patternIdx == patternLength
-}
-
-/**
  * Does a fuzzy search to find pattern inside a string.
  * @returns [boolean, number]       a boolean which tells if pattern was
  *                                  found or not and a search score
  */
-function fuzzyMatch(pattern: string, str: string): [boolean, number] {
+export function fuzzyMatch(pattern: string, str: string): [boolean, number] {
   const recursionCount = 0
   const recursionLimit = 10
   const matches: number[] = []

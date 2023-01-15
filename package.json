@@ -12,7 +12,6 @@
   "license": "MIT",
   "dependencies": {
     "clean-stack": "^5.1.0",
-    "fuse.js": "^6.6.2",
     "pino": "^8.8.0",
     "yargs-parser": "^21.1.1"
   },
