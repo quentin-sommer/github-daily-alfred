@@ -25,10 +25,8 @@ const UNMATCHED_LETTER_PENALTY = -1
 
 /**
  * Returns true if each character in pattern is found sequentially within str
- * @param {*} pattern string
- * @param {*} str string
  */
-function fuzzyMatchSimple(pattern, str) {
+function fuzzyMatchSimple(pattern: string, str: string) {
   let patternIdx = 0
   let strIdx = 0
   const patternLength = pattern.length
@@ -42,21 +40,17 @@ function fuzzyMatchSimple(pattern, str) {
   }
 
   return patternLength != 0 && strLength != 0 && patternIdx == patternLength
-    ? true
-    : false
 }
 
 /**
  * Does a fuzzy search to find pattern inside a string.
- * @param {*} pattern string        pattern to search for
- * @param {*} str     string        string which is being searched
  * @returns [boolean, number]       a boolean which tells if pattern was
  *                                  found or not and a search score
  */
-function fuzzyMatch(pattern, str) {
+function fuzzyMatch(pattern: string, str: string): [boolean, number] {
   const recursionCount = 0
   const recursionLimit = 10
-  const matches = []
+  const matches: number[] = []
   const maxMatches = 256
 
   return fuzzyMatchRecursive(
@@ -74,17 +68,17 @@ function fuzzyMatch(pattern, str) {
 }
 
 function fuzzyMatchRecursive(
-  pattern,
-  str,
-  patternCurIndex,
-  strCurrIndex,
-  srcMatces,
-  matches,
-  maxMatches,
-  nextMatch,
-  recursionCount,
-  recursionLimit
-) {
+  pattern: string,
+  str: string,
+  patternCurIndex: number,
+  strCurrIndex: number,
+  srcMatces: null | number[],
+  matches: number[],
+  maxMatches: number,
+  nextMatch: number,
+  recursionCount: number,
+  recursionLimit: number
+): [boolean, number] {
   let outScore = 0
 
   // Return if recursion limit is reached.
@@ -99,7 +93,7 @@ function fuzzyMatchRecursive(
 
   // Recursion params
   let recursiveMatch = false
-  let bestRecursiveMatches = []
+  let bestRecursiveMatches: number[] = []
   let bestRecursiveScore = 0
 
   // Loop through pattern and str looking for a match.
@@ -107,7 +101,8 @@ function fuzzyMatchRecursive(
   while (patternCurIndex < pattern.length && strCurrIndex < str.length) {
     // Match found.
     if (
-      pattern[patternCurIndex].toLowerCase() === str[strCurrIndex].toLowerCase()
+      pattern[patternCurIndex]?.toLowerCase() ===
+      str[strCurrIndex]?.toLowerCase()
     ) {
       if (nextMatch >= maxMatches) {
         return [false, outScore]
@@ -118,7 +113,7 @@ function fuzzyMatchRecursive(
         firstMatch = false
       }
 
-      const recursiveMatches = []
+      const recursiveMatches: number[] = []
       const [matched, recursiveScore] = fuzzyMatchRecursive(
         pattern,
         str,
@@ -153,7 +148,7 @@ function fuzzyMatchRecursive(
     outScore = 100
 
     // Apply leading letter penalty
-    let penalty = LEADING_LETTER_PENALTY * matches[0]
+    let penalty = LEADING_LETTER_PENALTY * (matches[0] as number)
     penalty =
       penalty < MAX_LEADING_LETTER_PENALTY
         ? MAX_LEADING_LETTER_PENALTY
@@ -166,10 +161,10 @@ function fuzzyMatchRecursive(
 
     // Apply ordering bonuses
     for (let i = 0; i < nextMatch; i++) {
-      const currIdx = matches[i]
+      const currIdx = matches[i] as number
 
       if (i > 0) {
-        const prevIdx = matches[i - 1]
+        const prevIdx = matches[i - 1] as number
         if (currIdx == prevIdx + 1) {
           outScore += SEQUENTIAL_BONUS
         }
@@ -181,8 +176,8 @@ function fuzzyMatchRecursive(
         const neighbor = str[currIdx - 1]
         const curr = str[currIdx]
         if (
-          neighbor !== neighbor.toUpperCase() &&
-          curr !== curr.toLowerCase()
+          neighbor !== neighbor?.toUpperCase() &&
+          curr !== curr?.toLowerCase()
         ) {
           outScore += CAMEL_BONUS
         }
@@ -199,7 +194,6 @@ function fuzzyMatchRecursive(
     // Return best result
     if (recursiveMatch && (!matched || bestRecursiveScore > outScore)) {
       // Recursive score is better than "this"
-      matches = [...bestRecursiveMatches]
       outScore = bestRecursiveScore
       return [true, outScore]
     } else if (matched) {
@@ -210,72 +204,4 @@ function fuzzyMatchRecursive(
     }
   }
   return [false, outScore]
-}
-
-/**
- * Strictly optional utility to help make using fts_fuzzy_match easier for large data sets
- * Uses setTimeout to process matches before a maximum amount of time before sleeping
- *
- * To use:
- *  const asyncMatcher = new ftsFuzzyMatchAsync(fuzzyMatch, "fts", "ForrestTheWoods",
- *                                              function(results) { console.log(results); });
- *  asyncMatcher.start();
- *
- * @param {*} matchFn   function      Matching function - fuzzyMatchSimple or fuzzyMatch.
- * @param {*} pattern   string        Pattern to search for.
- * @param {*} dataSet   array         Array of string in which pattern is searched.
- * @param {*} onComplete function     Callback function which is called after search is complete.
- */
-function ftsFuzzyMatchAsync(matchFn, pattern, dataSet, onComplete) {
-  const ITEMS_PER_CHECK = 1000 // performance.now can be very slow depending on platform
-  const results = []
-  const max_ms_per_frame = 1000.0 / 30.0 // 30FPS
-  let dataIndex = 0
-  let resumeTimeout = null
-
-  // Perform matches for at most max_ms
-  function step() {
-    clearTimeout(resumeTimeout)
-    resumeTimeout = null
-
-    var stopTime = performance.now() + max_ms_per_frame
-
-    for (; dataIndex < dataSet.length; ++dataIndex) {
-      if (dataIndex % ITEMS_PER_CHECK == 0) {
-        if (performance.now() > stopTime) {
-          resumeTimeout = setTimeout(step, 1)
-          return
-        }
-      }
-
-      var str = dataSet[dataIndex]
-      var result = matchFn(pattern, str)
-
-      // A little gross because fuzzy_match_simple and fuzzy_match return different things
-      if (matchFn === fuzzyMatchSimple && result == true) results.push(str)
-      else if (matchFn === fuzzyMatch && result[0] == true)
-        results.push([result[1], str])
-    }
-
-    onComplete(results)
-    return null
-  }
-
-  // Abort current process
-  this.cancel = function () {
-    if (resumeTimeout !== null) clearTimeout(resumeTimeout)
-  }
-
-  // Must be called to start matching.
-  // I tried to make asyncMatcher auto-start via "var resumeTimeout = step();"
-  // However setTimout behaving in an unexpected fashion as onComplete insisted on triggering twice.
-  this.start = function () {
-    step()
-  }
-
-  // Process full list. Blocks script execution until complete
-  this.flush = function () {
-    max_ms_per_frame = Infinity
-    step()
-  }
 }
