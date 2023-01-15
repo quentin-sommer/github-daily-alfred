@@ -6,7 +6,7 @@ type ConfigFields =
   | "alfredWorkflowCache"
   | "alfredWorkflowData"
 
-type ConfigType = Record<ConfigFields, string>
+type ConfigType = Record<ConfigFields | "appName", string>
 type ConfigArg = Record<ConfigFields, Maybe<string>>
 
 function valOrThrow(record: ConfigArg, field: ConfigFields): string {
@@ -23,6 +23,7 @@ class Config {
 
   constructor(args: ConfigArg) {
     this.config = {
+      appName: "github-daily",
       alfredWorkflowCache: valOrThrow(args, "alfredWorkflowCache"),
       alfredWorkflowData: valOrThrow(args, "alfredWorkflowData"),
       githubToken: valOrThrow(args, "githubToken"),

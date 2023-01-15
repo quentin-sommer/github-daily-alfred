@@ -18,7 +18,6 @@ export class Cache<T> {
 
   get(key: string): { value: T; stale: boolean } | undefined {
     const filepath = this.getFilePath(key)
-    logger().info("get", filepath)
     try {
       const content = readFileSync(filepath, { encoding: "utf-8" })
       const parsed = JSON.parse(content) as CachedValue<T>
@@ -39,7 +38,6 @@ export class Cache<T> {
     }
   }
   set(key: string, value: T, ttlMs: number): boolean {
-    logger().info("set", this.getFilePath(key))
     try {
       const cachedValue: CachedValue<T> = {
         maxAge: Date.now() + ttlMs,
@@ -49,7 +47,7 @@ export class Cache<T> {
       writeFileSync(this.getFilePath(key), content)
       return true
     } catch (err) {
-      logger().info(err)
+      logger().error({ err })
       return false
     }
   }

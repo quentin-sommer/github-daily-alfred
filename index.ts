@@ -71,15 +71,14 @@ async function main() {
   }
 
   getConfig()
-  logger().info(args)
+  logger().info({ msg: "Arguments", args })
   try {
     if (args.runningInBackground) {
       return backGroundEntrypoint(args.command)
     }
-
     return commandsToFns[args.command](false, args.filter)
   } catch (err) {
-    logger().error({ err }, "Unexpected error")
+    logger().error({ err })
   }
 }
 

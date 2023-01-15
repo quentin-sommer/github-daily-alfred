@@ -4,14 +4,15 @@ import https, { RequestOptions } from "https"
 
 async function graphqlRequest(query: string): Promise<unknown> {
   const payload = JSON.stringify({ query })
+  const appConfig = getConfig()
   const options: RequestOptions = {
     hostname: "api.github.com",
     port: 443,
     path: "/graphql",
     method: "POST",
     headers: {
-      authorization: `Bearer ${getConfig().githubToken}`,
-      "User-Agent": "qsmr-github-daily",
+      authorization: `Bearer ${appConfig.githubToken}`,
+      "User-Agent": appConfig.appName,
       "Content-Type": "application/json",
       "Content-Length": Buffer.byteLength(payload),
     },

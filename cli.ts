@@ -27,17 +27,9 @@ export async function executeFetchCommand(
   let items: Item[]
 
   if (runningInBackground) {
-    logger().error("here2")
-
     items = await fetcher()
-    logger().error("here3")
-
     cache.set(command, items, cacheTTLMs)
-    logger().error("here4")
-
     deleteBackgroundLock(command, cacheDir)
-    logger().error("here5")
-
     process.exit(0)
   } else {
     const cached = cache.get(command)
@@ -74,7 +66,6 @@ export async function executeFetchCommand(
     return
   }
 
-  logger().info("Filtering with " + filter)
   const filtered = items
     .reduce<{ item: Item; score: number }[]>((acc, item) => {
       const [matched, score] = fuzzyMatch(filter, item.title)
@@ -125,9 +116,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
     minutesDuration(1),
     filter,
     async () => {
-      logger().error("inside fetch reviews1")
       const prs = await getInvolvedPrs()
-      logger().error("inside fetch reviews2")
 
       const items: Item[] = prs.map((pr) => ({
         uid: pr.number.toString(),
@@ -139,7 +128,6 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
         },
         valid: true,
       }))
-      logger().error("inside fetch reviews3")
 
       return items
     }
