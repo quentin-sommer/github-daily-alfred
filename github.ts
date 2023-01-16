@@ -43,6 +43,16 @@ async function graphqlRequest(query: string): Promise<Record<string, unknown>> {
 
 const PRS_RESULTS_TO_FETCH = 100
 const REPOS_RESULTS_TO_FETCH = 100
+const prsPartialQuery = `{
+  id
+  title
+  number
+  repository {
+    nameWithOwner
+  }
+  url
+}
+`
 const myPrsQuery = `{
   viewer {
     pullRequests(
@@ -51,19 +61,13 @@ const myPrsQuery = `{
       orderBy: {field: UPDATED_AT, direction: DESC}
     ) {
       totalCount
-      nodes {
-        title
-        number
-        repository {
-          nameWithOwner
-        }
-        url
-      }
+      nodes ${prsPartialQuery}
     }
   }
 }`
 
 type PrPartialResponse = {
+  id: string
   title: string
   number: number
   repository: {
@@ -82,6 +86,7 @@ type MyPrsQueryResponse = {
 }
 
 type Prs = {
+  id: string
   title: string
   number: number
   repositoryFullName: string
@@ -96,6 +101,7 @@ export async function getMyPrs(): Promise<Prs> {
     )
   }
   return response.viewer.pullRequests.nodes.map((pr) => ({
+    id: pr.id,
     url: pr.url,
     title: pr.title,
     repositoryFullName: pr.repository.nameWithOwner,
@@ -113,14 +119,7 @@ const involvedPrsQuery = `{
   ) {
     issueCount
     nodes {
-      ... on PullRequest {
-        title
-        number
-        repository {
-          nameWithOwner
-        }
-        url
-      }
+      ... on PullRequest ${prsPartialQuery}
     }
   }
 }`
@@ -142,6 +141,7 @@ export async function getInvolvedPrs(): Promise<Prs> {
   }
 
   return res.search.nodes.map((pr) => ({
+    id: pr.id,
     title: pr.title,
     repositoryFullName: pr.repository.nameWithOwner,
     number: pr.number,

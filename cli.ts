@@ -14,6 +14,10 @@ function minutesDuration(minutes: number) {
 
 const MAX_ITEMS_TO_RETURN = 100
 
+const WARNING_ICON = {
+  path: "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns",
+}
+
 export async function executeFetchCommand(
   command: Command,
   runningInBackground: boolean,
@@ -55,7 +59,6 @@ export async function executeFetchCommand(
           {
             title: `Fetching ${command}`,
             subtitle: "",
-            icon: { path: "TODO" },
           },
         ],
         true
@@ -83,7 +86,7 @@ export async function executeFetchCommand(
 
   output(
     filtered.slice(0, MAX_ITEMS_TO_RETURN).map((item) => {
-      item.item.title = item.score?.toFixed(2) + " " + item.item.title
+      item.item.title = item.score + " " + item.item.title
       return item.item
     }),
     shouldRerun
@@ -99,13 +102,10 @@ export async function prs(runningInBackground: boolean, filter?: string) {
     async () => {
       const prs = await getMyPrs()
       const items: Item[] = prs.map((pr) => ({
-        uid: pr.number.toString(),
+        uid: pr.id,
         title: pr.title,
         subtitle: pr.repositoryFullName,
         arg: pr.url,
-        icon: {
-          path: "icon.png",
-        },
         valid: true,
       }))
 
@@ -124,13 +124,10 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
       const prs = await getInvolvedPrs()
 
       const items: Item[] = prs.map((pr) => ({
-        uid: pr.number.toString(),
+        uid: pr.id,
         title: pr.title,
         subtitle: pr.repositoryFullName,
         arg: pr.url,
-        icon: {
-          path: "icon.png",
-        },
         valid: true,
       }))
 
@@ -140,6 +137,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
 }
 
 type Item = {
+  // Empty when we don't want alfred to re-order
   uid?: string
   title: string
   subtitle: string
@@ -164,9 +162,6 @@ export async function repos(runningInBackground: boolean, filter?: string) {
         title: repo.nameWithOwner,
         subtitle: repo.url,
         arg: repo.url,
-        icon: {
-          path: "icon.png",
-        },
         valid: true,
       }))
 
@@ -212,10 +207,7 @@ export function output(data: Item[], reRun: boolean = false) {
       {
         title: "No results found",
         subtitle: "Try a different query?",
-        icon: {
-          path: "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/AlertStopIcon.icns",
-        },
-        uid: "",
+        icon: WARNING_ICON,
         valid: false,
       },
     ]
@@ -246,9 +238,7 @@ ${stack}
         copy,
         largetype: stack,
       },
-      icon: {
-        path: "",
-      },
+      icon: WARNING_ICON,
     },
   ])
 }
