@@ -73,7 +73,7 @@ async function main() {
   getConfig()
   logger().debug({ msg: "Arguments", args })
   logger().debug({
-    msg: `Will cache data in ${getConfig().alfredWorkflowCache}`,
+    msg: `Cache and logs path: ${getConfig().alfredWorkflowCache}`,
   })
   try {
     if (args.runningInBackground) {
