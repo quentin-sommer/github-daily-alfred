@@ -15,9 +15,6 @@ build generate-cache="true": clean
     --target=es2020 \
     --stats-out=dist/stats.json \
     index.ts
-  cp compile.package.json dist/package.json
-  cd dist && ../node_modules/.bin/pkg .
-
 
 dev: clean
   ./node_modules/.bin/ncc build --source-map --watch index.ts
@@ -27,10 +24,6 @@ run *args:
 
 run-bg-task command:
   alfred_debug=1 node ./dist/index.js --command={{command }} --background
-
-run-standalone *args: build
-  /usr/bin/time -h ./dist/github-daily {{args}}
-
 
 analyze: (build "generate-cache=false")
   ./node_modules/.bin/webpack-bundle-analyzer dist/stats.json
