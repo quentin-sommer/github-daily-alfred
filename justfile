@@ -8,13 +8,18 @@ export GITHUB_USERNAME := `cat github_username.txt`
 clean:
   rm -rf dist
 
-build generate-cache="true": clean
+build analyze-bundle="false": clean
   ./node_modules/.bin/ncc build \
-    {{ if generate-cache == "true" { "--v8-cache" } else { "" } }} \
+    {{ if analyze-bundle == "true" { "" } else { "--v8-cache" } }} \
     --minify \
     --target=es2020 \
-    --stats-out=dist/stats.json \
+    {{ if analyze-bundle == "true" { "--stats-out=dist/stats.json" } else { "" } }} \
     index.ts
+  # Extra files created by pino
+  rm dist/file.js \
+    dist/worker.js \
+    dist/worker1.js \
+    dist/worker-pipeline.js
 
 dev: clean
   ./node_modules/.bin/ncc build --source-map --watch index.ts
@@ -25,5 +30,5 @@ run *args:
 run-bg-task command:
   alfred_debug=1 node ./dist/index.js --command={{command }} --background
 
-analyze: (build "generate-cache=false")
+analyze: (build "true")
   ./node_modules/.bin/webpack-bundle-analyzer dist/stats.json
