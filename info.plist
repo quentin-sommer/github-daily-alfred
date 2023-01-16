@@ -330,14 +330,50 @@
 		</dict>
 	</dict>
 	<key>userconfigurationconfig</key>
-	<array/>
-	<key>variables</key>
-	<dict>
-		<key>GITHUB_TOKEN</key>
-		<string>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</string>
-		<key>GITHUB_USERNAME</key>
-		<string>quentin-sommer</string>
-	</dict>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Make sure to make permanent https://github.com/settings/tokens/new?description=GitHub%20Daily%20Alfred%20workflow&amp;amp;scopes=repo</string>
+			<key>label</key>
+			<string>GitHub API token</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>GITHUB_TOKEN</string>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string></string>
+				<key>placeholder</key>
+				<string></string>
+				<key>required</key>
+				<true/>
+				<key>trim</key>
+				<true/>
+			</dict>
+			<key>description</key>
+			<string>Your GitHub username</string>
+			<key>label</key>
+			<string>GitHub username</string>
+			<key>type</key>
+			<string>textfield</string>
+			<key>variable</key>
+			<string>GITHUB_USERNAME</string>
+		</dict>
+	</array>
 	<key>version</key>
 	<string></string>
 	<key>webaddress</key>

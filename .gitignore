@@ -4,3 +4,5 @@ tmp
 github_token.txt
 github_username.txt
 isolate*.log
+# local preferences
+prefs.plist
