@@ -2,7 +2,7 @@ import { logger } from "./logger"
 import { getConfig } from "./config"
 import https, { RequestOptions } from "https"
 
-async function graphqlRequest(query: string): Promise<unknown> {
+async function graphqlRequest(query: string): Promise<Record<string, unknown>> {
   const payload = JSON.stringify({ query })
   const appConfig = getConfig()
   const options: RequestOptions = {
@@ -18,25 +18,27 @@ async function graphqlRequest(query: string): Promise<unknown> {
     },
   }
 
-  const response = await new Promise<string>((resolve, reject) => {
-    let body = ""
-    const req = https.request(options, (res) => {
-      res.setEncoding("utf8")
-      res.on("data", (chunk) => (body += chunk))
-      res.on("end", () => {
-        if (res.statusCode !== undefined && res.statusCode < 400) {
-          resolve(body)
-        } else {
-          reject(body)
-        }
+  const response = await new Promise<{ data: Record<string, unknown> }>(
+    (resolve, reject) => {
+      let body = ""
+      const req = https.request(options, (res) => {
+        res.setEncoding("utf8")
+        res.on("data", (chunk) => (body += chunk))
+        res.on("end", () => {
+          if (res.statusCode !== undefined && res.statusCode < 400) {
+            resolve(JSON.parse(body))
+          } else {
+            reject(JSON.parse(body))
+          }
+        })
       })
-    })
-    req.on("error", (e) => reject(e))
-    req.write(payload)
-    req.end()
-  })
+      req.on("error", (e) => reject(e))
+      req.write(payload)
+      req.end()
+    }
+  )
 
-  return JSON.parse(response).data
+  return response.data
 }
 
 const PRS_RESULTS_TO_FETCH = 100
@@ -89,7 +91,7 @@ export async function getMyPrs(): Promise<Prs> {
   const response = (await graphqlRequest(myPrsQuery)) as MyPrsQueryResponse
 
   if (response.viewer.pullRequests.totalCount > PRS_RESULTS_TO_FETCH) {
-    logger().info(
+    logger().debug(
       `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${response.viewer.pullRequests.totalCount}`
     )
   }
@@ -134,7 +136,7 @@ export async function getInvolvedPrs(): Promise<Prs> {
     involvedPrsQuery
   )) as InvolvedPrsQueryResponse
   if (res.search.issueCount > PRS_RESULTS_TO_FETCH) {
-    logger().info(
+    logger().debug(
       `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${res.search.issueCount}`
     )
   }
@@ -200,13 +202,13 @@ export async function getRepos(): Promise<Repos> {
   while (hasNextPage) {
     const res = (await graphqlRequest(
       getReposQuery(cursor)
-    )) as ReposQueryResponse
+    )) as unknown as ReposQueryResponse
 
     const data = res.viewer.repositories
     repos.push(...data.nodes)
     cursor = data.pageInfo.endCursor
     hasNextPage = data.pageInfo.hasNextPage
-    logger().info(data.pageInfo)
+    logger().debug({ page: data.pageInfo, msg: "Fetching repos page" })
   }
 
   return repos

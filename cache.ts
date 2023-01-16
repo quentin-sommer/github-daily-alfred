@@ -31,7 +31,10 @@ export class Cache<T> {
         return undefined
       }
 
-      logger().info(`Error while getting cached file ${filepath}: ${err}`)
+      logger().error({
+        err,
+        msg: `Error while getting cached file ${filepath}`,
+      })
       rmSync(filepath, { force: true })
 
       return undefined

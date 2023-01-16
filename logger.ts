@@ -5,24 +5,26 @@ import { getConfig } from "./config"
 let fileLogger: Logger | null = null
 
 export function initLogger(background: boolean) {
-  const filepath = `${getConfig().alfredWorkflowCache}/log.txt`
+  const config = getConfig()
+  const filepath = `${config.alfredWorkflowCache}/log.txt`
+  const level = config.alfredDebug === "1" ? "debug" : "info"
   const fileDestination = pino.destination({
     dest: filepath,
     sync: true,
   })
 
   if (background) {
-    fileLogger = pino({ name: "Background", base: null }, fileDestination)
+    fileLogger = pino({ level, base: { name: "bg" } }, fileDestination)
   } else {
     // Log to stderr + background file
     fileLogger = pino(
-      { name: "Foreground", base: null },
+      { level, base: { name: "main" } },
       pino.multistream([
         { stream: fileDestination },
         { stream: new SonicBoom({ fd: process.stderr.fd, sync: true }) },
       ])
     )
-    fileLogger.info(`Background tasks log will be saved to ${filepath}`)
+    fileLogger.debug(`Background tasks log will be saved to ${filepath}`)
   }
 }
 

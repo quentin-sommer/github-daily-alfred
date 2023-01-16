@@ -5,6 +5,7 @@ type ConfigFields =
   | "githubUsername"
   | "alfredWorkflowCache"
   | "alfredWorkflowData"
+  | "alfredDebug"
 
 type ConfigType = Record<ConfigFields | "appName", string>
 type ConfigArg = Record<ConfigFields, Maybe<string>>
@@ -24,6 +25,8 @@ class Config {
   constructor(args: ConfigArg) {
     this.config = {
       appName: "github-daily",
+      alfredDebug:
+        args["alfredDebug"] === undefined ? "0" : args["alfredDebug"],
       alfredWorkflowCache: valOrThrow(args, "alfredWorkflowCache"),
       alfredWorkflowData: valOrThrow(args, "alfredWorkflowData"),
       githubToken: valOrThrow(args, "githubToken"),
@@ -42,6 +45,7 @@ export function getConfig(): ConfigType {
     return config.get()
   } else {
     config = new Config({
+      alfredDebug: process.env["alfred_debug"],
       alfredWorkflowCache: process.env["alfred_workflow_cache"],
       alfredWorkflowData: process.env["alfred_workflow_data"],
       githubToken: process.env["GITHUB_TOKEN"],

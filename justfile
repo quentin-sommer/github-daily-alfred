@@ -1,6 +1,7 @@
 export alfred_workflow_data := "./tmp/data"
 export alfred_workflow_cache := "./tmp/cache"
 export alfred_workflow_bundleid := "qsmr-debug-github-daily"
+export alfred_debug := "1"
 export GITHUB_TOKEN := `cat github_token.txt`
 export GITHUB_USERNAME := `cat github_username.txt`
 

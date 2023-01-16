@@ -27,10 +27,15 @@ export async function executeFetchCommand(
   let items: Item[]
 
   if (runningInBackground) {
-    items = await fetcher()
-    cache.set(command, items, cacheTTLMs)
-    deleteBackgroundLock(command, cacheDir)
-    process.exit(0)
+    try {
+      items = await fetcher()
+      cache.set(command, items, cacheTTLMs)
+      deleteBackgroundLock(command, cacheDir)
+      process.exit(0)
+    } catch (err) {
+      logger().error({ err, msg: `Error while running command ${command}` })
+      process.exit(1)
+    }
   } else {
     const cached = cache.get(command)
     if (cached !== undefined) {
@@ -38,9 +43,9 @@ export async function executeFetchCommand(
       if (cached.stale) {
         shouldRerun = true
         if (isRunning(command, cacheDir)) {
-          logger().info(`Already updating in the background`)
+          logger().debug(`Already updating in the background`)
         } else {
-          logger().info(`Updating stale ${command} in background.`)
+          logger().debug(`Updating stale ${command} in background.`)
           runInBackground(command, cacheDir)
         }
       }
@@ -56,7 +61,7 @@ export async function executeFetchCommand(
         true
       )
       runInBackground(command, cacheDir)
-      logger().info(`Fetching ${command} in background.`)
+      logger().debug(`Fetching ${command} in background.`)
       return
     }
   }

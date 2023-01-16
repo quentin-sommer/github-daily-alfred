@@ -56,7 +56,7 @@ function parseArgs(args: string[]): {
   }
 }
 export async function backGroundEntrypoint(command: Command) {
-  logger().info(`Running ${command} in background`)
+  logger().debug(`Running ${command} in background`)
 
   await commandsToFns[command](true)
 }
@@ -71,7 +71,10 @@ async function main() {
   }
 
   getConfig()
-  logger().info({ msg: "Arguments", args })
+  logger().debug({ msg: "Arguments", args })
+  logger().debug({
+    msg: `Will cache data in ${getConfig().alfredWorkflowCache}`,
+  })
   try {
     if (args.runningInBackground) {
       return backGroundEntrypoint(args.command)

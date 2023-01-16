@@ -18,7 +18,7 @@ export function runInBackground(command: Command, cacheDir: string) {
   bgProcess.unref()
 
   if (bgProcess.pid === undefined) {
-    logger().info(`Failed to spawn background task ${command}`)
+    logger().error(`Failed to spawn background task ${command}`)
     return
   }
   const taskFile = getTaskFile(command, cacheDir)
@@ -27,7 +27,7 @@ export function runInBackground(command: Command, cacheDir: string) {
     pid: bgProcess.pid,
   }
   writeFileSync(taskFile, JSON.stringify(data))
-  logger().info(`Spawned background task ${command} ${bgProcess.pid}`)
+  logger().debug(`Spawned background task ${command} ${bgProcess.pid}`)
 }
 
 type RunningTaskFile = {
@@ -56,7 +56,7 @@ export function isRunning(command: Command, cacheDir: string): boolean {
     if (errorIsFileNotExists(err)) {
       return false
     }
-    logger().info(`Error while getting task file ${taskFile}: ${err}`)
+    logger().error({ err, msg: `Error while getting task file ${taskFile}` })
     rmSync(taskFile, { force: true })
     return false
   }
