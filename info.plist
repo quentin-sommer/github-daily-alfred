@@ -87,7 +87,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>ghprs</string>
+				<string>prs</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -107,7 +107,7 @@
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string>ghprs</string>
+				<string>prs</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -136,7 +136,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>ghreviews</string>
+				<string>reviews</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -156,7 +156,7 @@
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string>ghreviews</string>
+				<string>reviews</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -206,7 +206,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>ghrepos</string>
+				<string>repos</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -226,7 +226,7 @@
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string>ghrepos</string>
+				<string>repos</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -255,7 +255,7 @@
 				<key>escaping</key>
 				<integer>102</integer>
 				<key>keyword</key>
-				<string>ghdash</string>
+				<string>gh</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -275,7 +275,7 @@
 				<key>subtext</key>
 				<string></string>
 				<key>title</key>
-				<string>ghdash</string>
+				<string>gh</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
