@@ -105,7 +105,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string></string>
+				<string>Your pull requests</string>
 				<key>title</key>
 				<string>prs</string>
 				<key>type</key>
@@ -154,7 +154,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string></string>
+				<string>Pull requests where you were tagged</string>
 				<key>title</key>
 				<string>reviews</string>
 				<key>type</key>
@@ -224,7 +224,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string></string>
+				<string>Repositories you can contribute to</string>
 				<key>title</key>
 				<string>repos</string>
 				<key>type</key>
@@ -273,7 +273,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string></string>
+				<string>Quick links</string>
 				<key>title</key>
 				<string>gh</string>
 				<key>type</key>
