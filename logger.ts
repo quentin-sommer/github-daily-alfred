@@ -2,7 +2,7 @@ import pino, { Logger } from "pino"
 import SonicBoom from "sonic-boom"
 import { getConfig } from "./config"
 
-let fileLogger: Logger | null = null
+let loggerInstance: Logger | null = null
 
 export function initLogger(background: boolean) {
   const config = getConfig()
@@ -14,23 +14,23 @@ export function initLogger(background: boolean) {
   })
 
   if (background) {
-    fileLogger = pino({ level, base: { name: "bg" } }, fileDestination)
+    loggerInstance = pino({ level, base: { name: "bg" } }, fileDestination)
   } else {
     // Log to stderr + background file
-    fileLogger = pino(
+    loggerInstance = pino(
       { level, base: { name: "main" } },
       pino.multistream([
-        { stream: fileDestination },
-        { stream: new SonicBoom({ fd: process.stderr.fd, sync: true }) },
+        { level, stream: fileDestination },
+        { level, stream: new SonicBoom({ fd: process.stderr.fd, sync: true }) },
       ])
     )
-    fileLogger.debug(`Background tasks log will be saved to ${filepath}`)
+    loggerInstance.error(`Background tasks log will be saved to ${filepath}`)
   }
 }
 
 export function logger(): Logger {
-  if (fileLogger === null) {
+  if (loggerInstance === null) {
     throw new Error("Logger not yet initialized")
   }
-  return fileLogger
+  return loggerInstance
 }
