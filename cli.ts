@@ -149,7 +149,6 @@ export async function repos(runningInBackground: boolean, filter?: string) {
     async () => {
       const repos = await getRepos()
       const items: Item[] = repos.map((repo) => ({
-        uid: repo.id,
         title: repo.nameWithOwner,
         subtitle: repo.url,
         arg: repo.url,
