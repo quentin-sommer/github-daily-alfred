@@ -105,9 +105,9 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Your pull requests</string>
+				<string>Pull requests you created</string>
 				<key>title</key>
-				<string>prs</string>
+				<string>Your pull requests</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -154,9 +154,9 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Pull requests where you were tagged</string>
+				<string>Pull requests where you are involved</string>
 				<key>title</key>
-				<string>reviews</string>
+				<string>Your reviews</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -226,7 +226,7 @@
 				<key>subtext</key>
 				<string>Repositories you can contribute to</string>
 				<key>title</key>
-				<string>repos</string>
+				<string>GitHub repos</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
@@ -273,9 +273,9 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Quick links</string>
+				<string>Shortcut to common GitHub pages</string>
 				<key>title</key>
-				<string>gh</string>
+				<string>GitHub links</string>
 				<key>type</key>
 				<integer>0</integer>
 				<key>withspace</key>
