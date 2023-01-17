@@ -100,7 +100,7 @@ export async function prs(runningInBackground: boolean, filter?: string) {
       const items: Item[] = prs.map((pr) => ({
         uid: pr.id,
         title: pr.title,
-        subtitle: pr.repositoryFullName,
+        subtitle: `${pr.repositoryFullName} #${pr.number}`,
         arg: pr.url,
         valid: true,
       }))
@@ -122,7 +122,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
       const items: Item[] = prs.map((pr) => ({
         uid: pr.id,
         title: pr.title,
-        subtitle: pr.repositoryFullName,
+        subtitle: `${pr.repositoryFullName} #${pr.number}`,
         arg: pr.url,
         valid: true,
       }))
