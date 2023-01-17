@@ -5,6 +5,8 @@
     "module": "commonjs",
     "target": "es2021",
     "strict": true,
+    // Turn on if you want accurate source map in dev
+    "sourceMap": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

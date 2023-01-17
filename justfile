@@ -33,7 +33,7 @@ run-bg-task command:
   node ./dist/index.js --command={{command }} --background
 
 # Run packaged app
-run-prod *args: build
+run-prod *args:
   /usr/bin/time ./dist/github-daily {{args}}
 
 analyze: (build "true")
