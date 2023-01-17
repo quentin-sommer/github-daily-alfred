@@ -112,9 +112,9 @@ export async function getMyPrs(): Promise<Prs> {
 const involvedPrsQuery = `{
   search(
     first: ${PRS_RESULTS_TO_FETCH}
-    query: "is:pr state:open involves:${
+    query: "is:pr state:open sort:updated -author:${
       getConfig().githubUsername
-    } sort:updated"
+    } involves:${getConfig().githubUsername}"
     type: ISSUE    
   ) {
     issueCount
