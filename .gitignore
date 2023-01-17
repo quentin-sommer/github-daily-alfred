@@ -6,3 +6,4 @@ github_username.txt
 isolate*.log
 # local preferences
 prefs.plist
+_CodeSignature
