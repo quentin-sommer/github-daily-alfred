@@ -427,7 +427,7 @@ The binary is in the `dist` folder inside the workflow directory. To open the wo
 		</dict>
 	</array>
 	<key>version</key>
-	<string>1.1.0</string>
+	<string>1.2.0</string>
 	<key>webaddress</key>
 	<string>https://github.com/quentin-sommer/github-daily-alfred</string>
 </dict>
