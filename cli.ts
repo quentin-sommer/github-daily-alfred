@@ -81,10 +81,7 @@ export async function executeFetchCommand(
     .sort((a, b) => b.score - a.score)
 
   output(
-    filtered.slice(0, MAX_ITEMS_TO_RETURN).map((item) => {
-      item.item.title = item.score + " " + item.item.title
-      return item.item
-    }),
+    filtered.slice(0, MAX_ITEMS_TO_RETURN).map((item) => item.item),
     shouldRerun
   )
 }
