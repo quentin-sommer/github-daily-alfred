@@ -9,6 +9,7 @@ clean:
   rm -rf dist
 
 build analyze-bundle="false": clean
+  # Target is 2020 because NCC compiles to target node 14 internally.
   ./node_modules/.bin/ncc build \
     {{ if analyze-bundle == "true" { "" } else { "--v8-cache" } }} \
     --minify \
