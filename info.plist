@@ -99,7 +99,7 @@
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./run-node.sh dist/index.js --command=prs --filter="$1"</string>
+				<string>./dist/github-daily --command=prs --filter="$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -148,7 +148,7 @@
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./run-node.sh dist/index.js --command=reviews --filter="$1"</string>
+				<string>./dist/github-daily --command=reviews --filter="$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -218,7 +218,7 @@
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./run-node.sh dist/index.js --command=repos --filter="$1"</string>
+				<string>./dist/github-daily --command=repos --filter="$1"</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>
@@ -267,7 +267,7 @@
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>./run-node.sh dist/index.js --command=menu</string>
+				<string>./dist/github-daily --command=menu</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
 				<key>scriptfile</key>

@@ -1,0 +1,11 @@
+{
+  "name": "github-daily",
+  "version": "1.0.0",
+  "description": "",
+  "bin": "index.js",
+  "type": "commonjs",
+  "keywords": [],
+  "author": "qsmr",
+  "license": "MIT",
+  "dependencies": {}
+}

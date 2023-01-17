@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "bin": "index.ts",
   "type": "commonjs",
   "keywords": [],
   "author": "qsmr",
@@ -16,6 +17,7 @@
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
+    "pkg": "^5.8.0",
     "@types/node": "^18.11.18",
     "@types/yargs-parser": "^21.0.0",
     "@vercel/ncc": "^0.36.0",

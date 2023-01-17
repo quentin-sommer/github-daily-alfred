@@ -8,12 +8,11 @@ export GITHUB_USERNAME := `cat github_username.txt`
 clean:
   rm -rf dist
 
+# Compile with ncc. Package with pkg
 build analyze-bundle="false": clean
-  # Target is 2020 because NCC compiles to target node 14 internally.
   ./node_modules/.bin/ncc build \
-    {{ if analyze-bundle == "true" { "" } else { "--v8-cache" } }} \
     --minify \
-    --target=es2020 \
+    --target=es2021 \
     {{ if analyze-bundle == "true" { "--stats-out=dist/stats.json" } else { "" } }} \
     index.ts
   # Extra files created by pino
@@ -21,6 +20,8 @@ build analyze-bundle="false": clean
     dist/worker.js \
     dist/worker1.js \
     dist/worker-pipeline.js
+  cp package.compile.json dist/package.json
+  cd dist && ../node_modules/.bin/pkg . --targets node18-macos-arm64
 
 dev: clean
   ./node_modules/.bin/ncc build --source-map --watch index.ts
@@ -29,7 +30,12 @@ run *args:
   /usr/bin/time -h node ./dist/index.js {{args}}
 
 run-bg-task command:
-  alfred_debug=1 node ./dist/index.js --command={{command }} --background
+  node ./dist/index.js --command={{command }} --background
+
+# Run packaged app
+run-prod *args: build
+  /usr/bin/time ./dist/github-daily {{args}}
 
 analyze: (build "true")
   ./node_modules/.bin/webpack-bundle-analyzer dist/stats.json
+
