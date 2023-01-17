@@ -8,10 +8,6 @@ import { logger } from "./logger"
 import { getConfig } from "./config"
 import { fuzzyMatch } from "./fuzzySearch"
 
-function minutesDuration(minutes: number) {
-  return minutes * 60 * 1000
-}
-
 const MAX_ITEMS_TO_RETURN = 100
 
 const WARNING_ICON = {
@@ -97,7 +93,7 @@ export async function prs(runningInBackground: boolean, filter?: string) {
   await executeFetchCommand(
     "prs",
     runningInBackground,
-    minutesDuration(1),
+    5 * 1000,
     filter,
     async () => {
       const prs = await getMyPrs()
@@ -118,7 +114,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
   await executeFetchCommand(
     "reviews",
     runningInBackground,
-    minutesDuration(1),
+    5 * 1000,
     filter,
     async () => {
       const prs = await getInvolvedPrs()
@@ -153,7 +149,7 @@ export async function repos(runningInBackground: boolean, filter?: string) {
   await executeFetchCommand(
     "repos",
     runningInBackground,
-    minutesDuration(20),
+    24 * 3600 * 1000,
     filter,
     async () => {
       const repos = await getRepos()
