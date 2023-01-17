@@ -1,11 +1,13 @@
 import pino, { Logger } from "pino"
 import SonicBoom from "sonic-boom"
 import { getConfig } from "./config"
+import { mkdirSync } from "fs"
 
 let loggerInstance: Logger | null = null
 
 export function initLogger(background: boolean) {
   const config = getConfig()
+  mkdirSync(config.alfredWorkflowCache, { recursive: true })
   const filepath = `${config.alfredWorkflowCache}/log.txt`
   const level = config.alfredDebug === "1" ? "debug" : "info"
   const fileDestination = pino.destination({
