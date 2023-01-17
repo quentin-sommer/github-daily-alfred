@@ -3,6 +3,7 @@ dist
 tmp
 github_token.txt
 github_username.txt
+quick_links.json
 isolate*.log
 # local preferences
 prefs.plist

@@ -373,6 +373,27 @@
 			<key>variable</key>
 			<string>GITHUB_USERNAME</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<string>[]</string>
+				<key>required</key>
+				<false/>
+				<key>trim</key>
+				<true/>
+				<key>verticalsize</key>
+				<integer>6</integer>
+			</dict>
+			<key>description</key>
+			<string>Will be prepend to the results of `gh` command. Should be a array of json objects `{"title":"My title", "arg": "https://destination.com"}`</string>
+			<key>label</key>
+			<string>Custom links</string>
+			<key>type</key>
+			<string>textarea</string>
+			<key>variable</key>
+			<string>QUICK_LINKS</string>
+		</dict>
 	</array>
 	<key>version</key>
 	<string></string>

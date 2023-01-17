@@ -169,11 +169,6 @@ export async function repos(runningInBackground: boolean, filter?: string) {
 export async function menu(_runningInBackground: boolean, _filter?: string) {
   const items: Item[] = [
     {
-      title: "Data-science project",
-      arg: "https://github.com/orgs/TransitApp/projects/12",
-      subtitle: "https://github.com/orgs/TransitApp/projects/12",
-    },
-    {
       title: "Notifications",
       arg: "https://github.com/notifications?query=is:unread",
       subtitle: "https://github.com/notifications?query=is:unread",
@@ -194,7 +189,10 @@ export async function menu(_runningInBackground: boolean, _filter?: string) {
       subtitle: "https://github.com/issues",
     },
   ]
-  output(items)
+  const customItems: Item[] = (
+    JSON.parse(getConfig().customQuickLinks) as { title: string; arg: string }[]
+  ).map((link) => ({ title: link.title, arg: link.arg, subtitle: link.arg }))
+  output(customItems.concat(items))
 }
 
 export function output(data: Item[], reRun: boolean = false) {

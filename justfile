@@ -4,6 +4,7 @@ export alfred_workflow_bundleid := "qsmr-debug-github-daily"
 export alfred_debug := "1"
 export GITHUB_TOKEN := `cat github_token.txt`
 export GITHUB_USERNAME := `cat github_username.txt`
+export QUICK_LINKS := `cat quick_links.json`
 
 clean:
   rm -rf dist

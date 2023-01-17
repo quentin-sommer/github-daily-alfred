@@ -6,6 +6,7 @@ type ConfigFields =
   | "alfredWorkflowCache"
   | "alfredWorkflowData"
   | "alfredDebug"
+  | "customQuickLinks"
 
 type ConfigType = Record<ConfigFields | "appName", string>
 type ConfigArg = Record<ConfigFields, Maybe<string>>
@@ -31,6 +32,7 @@ class Config {
       alfredWorkflowData: valOrThrow(args, "alfredWorkflowData"),
       githubToken: valOrThrow(args, "githubToken"),
       githubUsername: valOrThrow(args, "githubUsername"),
+      customQuickLinks: valOrThrow(args, "customQuickLinks"),
     }
   }
   get(): ConfigType {
@@ -50,6 +52,7 @@ export function getConfig(): ConfigType {
       alfredWorkflowData: process.env["alfred_workflow_data"],
       githubToken: process.env["GITHUB_TOKEN"],
       githubUsername: process.env["GITHUB_USERNAME"],
+      customQuickLinks: process.env["QUICK_LINKS"],
     })
     return config.get()
   }
