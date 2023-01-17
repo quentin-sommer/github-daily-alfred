@@ -290,7 +290,17 @@
 		</dict>
 	</array>
 	<key>readme</key>
-	<string></string>
+	<string># Installation
+
+- GITHUB_TOKEN
+To create an API token (make sure to make it permanent): 
+https://github.com/settings/tokens/new?description=GitHub%20Daily%20Alfred%20workflow&amp;amp;scopes=repo
+
+- QUICK_LINKS
+Should be a array of json objects `[{"title": "My title", "arg": "https://destination.com"}]`
+
+
+The first time you'll run the workflow you will get the Apple warning message, you need to right click the executable (</string>
 	<key>uidata</key>
 	<dict>
 		<key>B46A946C-CFFE-4EF7-B052-48BFEAEB7A0B</key>
@@ -344,7 +354,7 @@
 				<true/>
 			</dict>
 			<key>description</key>
-			<string>Make sure to make permanent https://github.com/settings/tokens/new?description=GitHub%20Daily%20Alfred%20workflow&amp;amp;scopes=repo</string>
+			<string>Make sure to make permanent</string>
 			<key>label</key>
 			<string>GitHub API token</string>
 			<key>type</key>
@@ -386,7 +396,7 @@
 				<integer>6</integer>
 			</dict>
 			<key>description</key>
-			<string>Will be prepend to the results of `gh` command. Should be a array of json objects `{"title":"My title", "arg": "https://destination.com"}`</string>
+			<string>Will be prepend to the results of `gh` command.</string>
 			<key>label</key>
 			<string>Custom links</string>
 			<key>type</key>
@@ -396,7 +406,7 @@
 		</dict>
 	</array>
 	<key>version</key>
-	<string></string>
+	<string>1.0.0</string>
 	<key>webaddress</key>
 	<string></string>
 </dict>
