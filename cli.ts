@@ -98,7 +98,6 @@ export async function prs(runningInBackground: boolean, filter?: string) {
     async () => {
       const prs = await getMyPrs()
       const items: Item[] = prs.map((pr) => ({
-        uid: pr.id,
         title: pr.title,
         subtitle: `${pr.repositoryFullName} #${pr.number}`,
         arg: pr.url,
@@ -120,7 +119,6 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
       const prs = await getInvolvedPrs()
 
       const items: Item[] = prs.map((pr) => ({
-        uid: pr.id,
         title: pr.title,
         subtitle: `${pr.repositoryFullName} #${pr.number}`,
         arg: pr.url,
