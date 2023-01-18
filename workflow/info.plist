@@ -426,6 +426,8 @@ The binary is in the `dist` folder inside the workflow directory. To open the wo
 			<string>QUICK_LINKS</string>
 		</dict>
 	</array>
+	<key>variablesdontexport</key>
+	<array/>
 	<key>version</key>
 	<string>1.2.0</string>
 	<key>webaddress</key>
