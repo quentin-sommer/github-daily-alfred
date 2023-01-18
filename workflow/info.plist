@@ -64,11 +64,11 @@
 	<key>createdby</key>
 	<string>Quentin Sommer</string>
 	<key>description</key>
-	<string>daily operations with github</string>
+	<string>Daily interactions with GitHub</string>
 	<key>disabled</key>
 	<false/>
 	<key>name</key>
-	<string>github daily</string>
+	<string>GitHub daily</string>
 	<key>objects</key>
 	<array>
 		<dict>
