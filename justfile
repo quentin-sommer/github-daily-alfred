@@ -21,7 +21,8 @@ build: clean
     workflow/index.ts
   # Extra files created by pino
   echo {{build_directory}}
-  cd {{build_directory}} && rm file.js \
+  cd {{build_directory}} && rm \
+    file.js \
     worker.js \
     worker1.js \
     worker-pipeline.js
@@ -29,7 +30,11 @@ build: clean
   cd {{build_directory}} && {{justfile_directory()}}/node_modules/.bin/pkg . --targets node18-macos-arm64
 
 dev: clean
-  ./node_modules/.bin/ncc build --source-map --watch workflow/index.ts
+  ./node_modules/.bin/ncc build \
+    --out={{build_directory}} \
+    --source-map \
+    --watch \
+    workflow/index.ts
 
 run *args:
   /usr/bin/time -h node {{build_directory}}/index.js {{args}}
