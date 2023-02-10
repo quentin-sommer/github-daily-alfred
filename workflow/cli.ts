@@ -1,4 +1,9 @@
-import { getInvolvedPrs, getMyPrs, getRepos } from "./github"
+import {
+  getActionableReviews,
+  getInvolvedPrs,
+  getMyPrs,
+  getRepos,
+} from "./github"
 import { Cache } from "./cache"
 import cleanStack from "clean-stack"
 import type { Command } from "./index"
@@ -109,6 +114,27 @@ export async function prs(runningInBackground: boolean, filter?: string) {
 export async function reviews(runningInBackground: boolean, filter?: string) {
   await executeFetchCommand(
     "reviews",
+    runningInBackground,
+    5 * 1000,
+    filter,
+    async () => {
+      const prs = await getActionableReviews()
+
+      const items: Item[] = prs.map((pr) => ({
+        title: pr.title,
+        subtitle: `${pr.repositoryFullName} #${pr.number}`,
+        arg: pr.url,
+        valid: true,
+      }))
+
+      return items
+    }
+  )
+}
+
+export async function involved(runningInBackground: boolean, filter?: string) {
+  await executeFetchCommand(
+    "involved",
     runningInBackground,
     5 * 1000,
     filter,

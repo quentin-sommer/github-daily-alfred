@@ -47,6 +47,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>F2F563C5-1CC9-4478-A3FC-62EB584478F0</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>F5D5D3BC-473D-4CEB-B497-A1721D51934A</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>FC612F34-12D8-4BD8-B213-8F61F2BF599B</key>
 		<array>
 			<dict>
@@ -288,6 +301,55 @@
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>involved</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string></string>
+				<key>script</key>
+				<string>./dist/github-daily --command=involved --filter="$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Pull Requests you reviewed/commented/were mentioned</string>
+				<key>title</key>
+				<string>Your involved Pull Requests</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>F2F563C5-1CC9-4478-A3FC-62EB584478F0</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string># Configuration
@@ -344,6 +406,13 @@ The binary is in the `dist` folder inside the workflow directory. To open the wo
 			<real>190</real>
 			<key>ypos</key>
 			<real>170</real>
+		</dict>
+		<key>F2F563C5-1CC9-4478-A3FC-62EB584478F0</key>
+		<dict>
+			<key>xpos</key>
+			<real>50</real>
+			<key>ypos</key>
+			<real>370</real>
 		</dict>
 		<key>F5D5D3BC-473D-4CEB-B497-A1721D51934A</key>
 		<dict>

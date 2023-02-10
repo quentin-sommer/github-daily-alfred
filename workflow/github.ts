@@ -51,6 +51,18 @@ const prsPartialQuery = `{
     nameWithOwner
   }
   url
+  reviews(
+    first: 10
+    author: "${getConfig().githubUsername}"
+    states: [APPROVED]
+  ) {
+    nodes {
+      state
+      author {
+        login
+      }
+    }
+  }
 }
 `
 const myPrsQuery = `{
@@ -74,6 +86,14 @@ type PrPartialResponse = {
     nameWithOwner: string
   }
   url: string
+  reviews: {
+    nodes: {
+      state: "APPROVED"
+      author: {
+        login: string
+      }
+    }[]
+  }
 }
 
 type MyPrsQueryResponse = {
@@ -85,13 +105,14 @@ type MyPrsQueryResponse = {
   }
 }
 
-type Prs = {
+type Pr = {
   id: string
   title: string
   number: number
   repositoryFullName: string
   url: string
-}[]
+}
+type Prs = Pr[]
 export async function getMyPrs(): Promise<Prs> {
   const response = (await graphqlRequest(myPrsQuery)) as MyPrsQueryResponse
 
@@ -130,7 +151,8 @@ type InvolvedPrsQueryResponse = {
     nodes: PrPartialResponse[]
   }
 }
-export async function getInvolvedPrs(): Promise<Prs> {
+
+async function internalGetInvolvedPrs() {
   const res = (await graphqlRequest(
     involvedPrsQuery
   )) as InvolvedPrsQueryResponse
@@ -140,13 +162,20 @@ export async function getInvolvedPrs(): Promise<Prs> {
     )
   }
 
-  return res.search.nodes.map((pr) => ({
-    id: pr.id,
-    title: pr.title,
-    repositoryFullName: pr.repository.nameWithOwner,
-    number: pr.number,
-    url: pr.url,
-  }))
+  return res.search.nodes
+}
+
+export async function getActionableReviews(): Promise<Prs> {
+  return (
+    (await internalGetInvolvedPrs())
+      // Keep PRs without approved reviews by current user
+      .filter((pr) => pr.reviews.nodes.length === 0)
+      .map(prMapper)
+  )
+}
+
+export async function getInvolvedPrs(): Promise<Prs> {
+  return (await internalGetInvolvedPrs()).map(prMapper)
 }
 
 function getReposQuery(cursor: string | undefined) {
@@ -212,4 +241,14 @@ export async function getRepos(): Promise<Repos> {
   }
 
   return repos
+}
+
+function prMapper(pr: PrPartialResponse): Pr {
+  return {
+    id: pr.id,
+    title: pr.title,
+    repositoryFullName: pr.repository.nameWithOwner,
+    number: pr.number,
+    url: pr.url,
+  }
 }

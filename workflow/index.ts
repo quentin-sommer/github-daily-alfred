@@ -1,10 +1,10 @@
-import { menu, outputError, prs, repos, reviews } from "./cli"
+import { menu, outputError, prs, repos, reviews, involved } from "./cli"
 import { detailed } from "yargs-parser"
 import type { Maybe } from "./utils"
 import { initLogger, logger } from "./logger"
 import { getConfig } from "./config"
 
-const commands = ["prs", "reviews", "repos", "menu"] as const
+const commands = ["prs", "reviews", "repos", "menu", "involved"] as const
 export type Command = (typeof commands)[number]
 
 const commandsToFns: Record<
@@ -13,6 +13,7 @@ const commandsToFns: Record<
 > = {
   prs: prs,
   reviews: reviews,
+  involved: involved,
   repos: repos,
   menu: menu,
 }

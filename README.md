@@ -33,7 +33,8 @@ workflow in the list -&gt; open in finder
 - `gh`: list of common GitHub pages
 - `repos`: list of all repos you have access to
 - `prs`: list of the PRs you created
-- `reviews`: list of the PRs where you are involved, but did not create (tagged, asked for review, commented)
+- `involved`: list of the PRs where you are involved, but did not create (tagged, asked for review, commented)
+- `reviews`: list of the PRs where you are involved, but did not approve ✅ yet
 
 **Filtering**: `repos`, `prs`, `reviews` all support filtering with fuzzy search
 
