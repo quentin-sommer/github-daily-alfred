@@ -20,7 +20,6 @@ build: clean
     --out={{build_directory}} \
     workflow/index.ts
   # Extra files created by pino
-  echo {{build_directory}}
   cd {{build_directory}} && rm \
     file.js \
     worker.js \

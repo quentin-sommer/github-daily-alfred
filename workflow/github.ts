@@ -105,7 +105,7 @@ type MyPrsQueryResponse = {
   }
 }
 
-type Pr = {
+export type Pr = {
   id: string
   title: string
   number: number

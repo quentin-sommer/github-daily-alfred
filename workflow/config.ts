@@ -7,6 +7,7 @@ type ConfigFields =
   | "alfredWorkflowData"
   | "alfredDebug"
   | "customQuickLinks"
+  | "disableAlfredReordering"
 
 type ConfigType = Record<ConfigFields | "appName", string>
 type ConfigArg = Record<ConfigFields, Maybe<string>>
@@ -33,6 +34,10 @@ class Config {
       githubToken: valOrThrow(args, "githubToken"),
       githubUsername: valOrThrow(args, "githubUsername"),
       customQuickLinks: valOrThrow(args, "customQuickLinks"),
+      disableAlfredReordering:
+        args["disableAlfredReordering"] === undefined
+          ? "0"
+          : args["disableAlfredReordering"],
     }
   }
   get(): ConfigType {
@@ -53,6 +58,7 @@ export function getConfig(): ConfigType {
       githubToken: process.env["GITHUB_TOKEN"],
       githubUsername: process.env["GITHUB_USERNAME"],
       customQuickLinks: process.env["QUICK_LINKS"],
+      disableAlfredReordering: process.env["DISABLE_ALFRED_REORDERING"],
     })
     return config.get()
   }

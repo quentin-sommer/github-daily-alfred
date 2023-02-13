@@ -494,9 +494,26 @@ The binary is in the `dist` folder inside the workflow directory. To open the wo
 			<key>variable</key>
 			<string>QUICK_LINKS</string>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>default</key>
+				<false/>
+				<key>required</key>
+				<false/>
+				<key>text</key>
+				<string>Disable alfred re-ordering the results</string>
+			</dict>
+			<key>description</key>
+			<string>Alfred re-orders results based on usage. Checking this disables it.</string>
+			<key>label</key>
+			<string></string>
+			<key>type</key>
+			<string>checkbox</string>
+			<key>variable</key>
+			<string>DISABLE_ALFRED_REORDERING</string>
+		</dict>
 	</array>
-	<key>variablesdontexport</key>
-	<array/>
 	<key>version</key>
 	<string>1.2.0</string>
 	<key>webaddress</key>

@@ -3,6 +3,7 @@ import {
   getInvolvedPrs,
   getMyPrs,
   getRepos,
+  Pr,
 } from "./github"
 import { Cache } from "./cache"
 import cleanStack from "clean-stack"
@@ -91,6 +92,19 @@ export async function executeFetchCommand(
   )
 }
 
+function prItem(pr: Pr): Item {
+  const partial: Item = {
+    title: pr.title,
+    subtitle: `${pr.repositoryFullName} #${pr.number}`,
+    arg: pr.url,
+    valid: true,
+  }
+  if (getConfig().disableAlfredReordering === "0") {
+    partial.uid = pr.id
+  }
+  return partial
+}
+
 export async function prs(runningInBackground: boolean, filter?: string) {
   await executeFetchCommand(
     "prs",
@@ -99,12 +113,7 @@ export async function prs(runningInBackground: boolean, filter?: string) {
     filter,
     async () => {
       const prs = await getMyPrs()
-      const items: Item[] = prs.map((pr) => ({
-        title: pr.title,
-        subtitle: `${pr.repositoryFullName} #${pr.number}`,
-        arg: pr.url,
-        valid: true,
-      }))
+      const items: Item[] = prs.map(prItem)
 
       return items
     }
@@ -119,13 +128,7 @@ export async function reviews(runningInBackground: boolean, filter?: string) {
     filter,
     async () => {
       const prs = await getActionableReviews()
-
-      const items: Item[] = prs.map((pr) => ({
-        title: pr.title,
-        subtitle: `${pr.repositoryFullName} #${pr.number}`,
-        arg: pr.url,
-        valid: true,
-      }))
+      const items: Item[] = prs.map(prItem)
 
       return items
     }
@@ -140,13 +143,7 @@ export async function involved(runningInBackground: boolean, filter?: string) {
     filter,
     async () => {
       const prs = await getInvolvedPrs()
-
-      const items: Item[] = prs.map((pr) => ({
-        title: pr.title,
-        subtitle: `${pr.repositoryFullName} #${pr.number}`,
-        arg: pr.url,
-        valid: true,
-      }))
+      const items: Item[] = prs.map(prItem)
 
       return items
     }
@@ -154,8 +151,8 @@ export async function involved(runningInBackground: boolean, filter?: string) {
 }
 
 type Item = {
-  // Empty when we don't want alfred to re-order
-  uid?: string
+  // Omitted or undefined when we don't want alfred to re-order
+  uid?: string | undefined
   title: string
   subtitle: string
   arg?: string
@@ -175,6 +172,7 @@ export async function repos(runningInBackground: boolean, filter?: string) {
     async () => {
       const repos = await getRepos()
       const items: Item[] = repos.map((repo) => ({
+        uid: getConfig().disableAlfredReordering === "0" ? repo.id : undefined,
         title: repo.nameWithOwner,
         subtitle: repo.url,
         arg: repo.url,
