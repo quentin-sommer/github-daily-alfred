@@ -17,6 +17,8 @@ build-x64: (_build "x64")
 
 build: build-arm
 
+package: (_package "arm64") (_package "x64")
+
 dev: clean
   ./node_modules/.bin/ncc build \
     --out={{build_directory}} \
@@ -55,3 +57,18 @@ _build arch: clean
   cd {{build_directory}} && \
     {{justfile_directory()}}/node_modules/.bin/pkg . \
     --targets latest-macos-{{arch}}
+
+# Create alfred workflow export file
+_package arch: (_build arch)
+  rm -rf tmp/workflow-{{arch}}
+
+  rsync -r \
+    --exclude=prefs.plist \
+    --exclude=stats.json \
+    workflow/* tmp/workflow-{{arch}}
+
+  # re-ignore to be extra safe
+  cd tmp/workflow-{{arch}} && zip -x prefs.plist -r github-daily.alfredworkflow *
+
+  mv tmp/workflow-{{arch}}/github-daily.alfredworkflow \
+    github-daily-{{arch}}.alfredworkflow

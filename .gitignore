@@ -8,3 +8,4 @@ isolate*.log
 # local preferences
 prefs.plist
 _CodeSignature
+*.alfredworkflow
