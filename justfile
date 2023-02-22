@@ -11,35 +11,24 @@ build_directory := justfile_directory() / "workflow" / "dist"
 clean:
   rm -rf {{build_directory}}
 
-# Compile with ncc. Package with pkg
-build: clean
-  ./node_modules/.bin/ncc build \
-    --minify \
-    --target=es2021 \
-    --stats-out={{build_directory / "stats.json"}} \
-    --out={{build_directory}} \
-    workflow/index.ts
-  # Extra files created by pino
-  cd {{build_directory}} && rm \
-    file.js \
-    worker.js \
-    worker1.js \
-    worker-pipeline.js
-  cp package.compile.json {{build_directory}}/package.json
-  cd {{build_directory}} && {{justfile_directory()}}/node_modules/.bin/pkg . --targets node18-macos-arm64
+build-arm: (_build "arm64")
+
+build-x64: (_build "x64")
+
+build: build-arm
 
 dev: clean
   ./node_modules/.bin/ncc build \
     --out={{build_directory}} \
     --source-map \
     --watch \
-    workflow/index.ts
+    src/index.ts
 
 run *args:
   /usr/bin/time -h node {{build_directory}}/index.js {{args}}
 
 run-bg-task command:
-  node {{build_directory}}/index.js --command={{command }} --background
+  node {{build_directory}}/index.js --command={{command}} --background
 
 # Run packaged app
 run-prod *args:
@@ -48,3 +37,21 @@ run-prod *args:
 analyze: build
   ./node_modules/.bin/webpack-bundle-analyzer {{build_directory}}/stats.json
 
+# Compile with ncc. Package with pkg
+_build arch: clean
+  ./node_modules/.bin/ncc build \
+    --minify \
+    --target=es2021 \
+    --stats-out={{build_directory / "stats.json"}} \
+    --out={{build_directory}} \
+    src/index.ts
+  # Extra files created by pino
+  cd {{build_directory}} && rm \
+    file.js \
+    worker.js \
+    worker1.js \
+    worker-pipeline.js
+  cp package.compile.json {{build_directory}}/package.json
+  cd {{build_directory}} && \
+    {{justfile_directory()}}/node_modules/.bin/pkg . \
+    --targets latest-macos-{{arch}}
