@@ -9,7 +9,7 @@ export QUICK_LINKS := `cat quick_links.json`
 build_directory := justfile_directory() / "workflow" / "dist"
 
 clean:
-  rm -rf {{build_directory}}
+  rm -rf {{build_directory}} tmp
 
 build-arm: (_build "arm64")
 
@@ -61,6 +61,7 @@ _build arch: clean
 # Create alfred workflow export file
 _package arch: (_build arch)
   rm -rf tmp/workflow-{{arch}}
+  mkdir -p tmp
 
   rsync -r \
     --exclude=prefs.plist \
