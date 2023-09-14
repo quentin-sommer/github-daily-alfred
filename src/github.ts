@@ -1,6 +1,7 @@
 import { logger } from "./logger"
 import { getConfig } from "./config"
 import https, { RequestOptions } from "https"
+import { DateTime } from "luxon"
 
 async function graphqlRequest(query: string): Promise<Record<string, unknown>> {
   const payload = JSON.stringify({ query })
@@ -47,6 +48,7 @@ const prsPartialQuery = `{
   id
   title
   number
+  updatedAt
   repository {
     nameWithOwner
   }
@@ -82,6 +84,7 @@ type PrPartialResponse = {
   id: string
   title: string
   number: number
+  updatedAt: string
   repository: {
     nameWithOwner: string
   }
@@ -130,6 +133,21 @@ export async function getMyPrs(): Promise<Prs> {
   }))
 }
 
+const reviewRequestedPrsQuery = `{
+  search(
+    first: ${PRS_RESULTS_TO_FETCH}
+    query: "is:pr is:open sort:updated review-requested:${
+      getConfig().githubUsername
+    }"
+    type: ISSUE    
+  ) {
+    issueCount
+    nodes {
+      ... on PullRequest ${prsPartialQuery}
+    }
+  }
+}`
+
 const involvedPrsQuery = `{
   search(
     first: ${PRS_RESULTS_TO_FETCH}
@@ -151,23 +169,49 @@ type InvolvedPrsQueryResponse = {
     nodes: PrPartialResponse[]
   }
 }
+type ReviewRequestedPrsQueryResponse = InvolvedPrsQueryResponse
 
-async function internalGetInvolvedPrs() {
-  const res = (await graphqlRequest(
+async function internalGetReviewsAndInvolvedPrs() {
+  const tooManyResultsMessage = `Only returning first ${PRS_RESULTS_TO_FETCH} results of`
+  const involved = (await graphqlRequest(
     involvedPrsQuery
   )) as InvolvedPrsQueryResponse
-  if (res.search.issueCount > PRS_RESULTS_TO_FETCH) {
-    logger().debug(
-      `Only returning first ${PRS_RESULTS_TO_FETCH} results of ${res.search.issueCount}`
-    )
+  const reviews = (await graphqlRequest(
+    reviewRequestedPrsQuery
+  )) as ReviewRequestedPrsQueryResponse
+
+  if (involved.search.issueCount > PRS_RESULTS_TO_FETCH) {
+    logger().debug(`${tooManyResultsMessage} ${involved.search.issueCount}`)
+  }
+  if (reviews.search.issueCount > PRS_RESULTS_TO_FETCH) {
+    logger().debug(`${tooManyResultsMessage} ${reviews.search.issueCount}`)
   }
 
-  return res.search.nodes
+  const longest =
+    reviews.search.nodes.length >= involved.search.nodes.length
+      ? reviews.search.nodes
+      : involved.search.nodes
+  const shortest =
+    reviews.search.nodes.length < involved.search.nodes.length
+      ? reviews.search.nodes
+      : involved.search.nodes
+
+  const prsSeen = new Set(longest.map((pr) => pr.id))
+
+  // Recombine duplicates from the 2 graphql queries
+  return shortest
+    .filter((pr) => !prsSeen.has(pr.id))
+    .concat(longest)
+    .sort(
+      (a, b) =>
+        DateTime.fromISO(b.updatedAt).valueOf() -
+        DateTime.fromISO(a.updatedAt).valueOf()
+    )
 }
 
 export async function getActionableReviews(): Promise<Prs> {
   return (
-    (await internalGetInvolvedPrs())
+    (await internalGetReviewsAndInvolvedPrs())
       // Keep PRs without approved reviews by current user
       .filter((pr) => pr.reviews.nodes.length === 0)
       .map(prMapper)
@@ -175,7 +219,7 @@ export async function getActionableReviews(): Promise<Prs> {
 }
 
 export async function getInvolvedPrs(): Promise<Prs> {
-  return (await internalGetInvolvedPrs()).map(prMapper)
+  return (await internalGetReviewsAndInvolvedPrs()).map(prMapper)
 }
 
 function getReposQuery(cursor: string | undefined) {

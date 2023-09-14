@@ -13,10 +13,12 @@
   "license": "MIT",
   "dependencies": {
     "clean-stack": "^5.1.0",
+    "luxon": "^3.4.3",
     "pino": "^8.8.0",
     "yargs-parser": "^21.1.1"
   },
   "devDependencies": {
+    "@types/luxon": "^3.3.2",
     "@types/node": "^18.11.18",
     "@types/yargs-parser": "^21.0.0",
     "@vercel/ncc": "^0.36.0",
