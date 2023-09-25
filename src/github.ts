@@ -3,7 +3,7 @@ import { getConfig } from "./config"
 import https, { RequestOptions } from "https"
 import { DateTime } from "luxon"
 
-async function graphqlRequest(query: string): Promise<Record<string, unknown>> {
+async function graphqlRequest<T>(query: string): Promise<T> {
   const payload = JSON.stringify({ query })
   const appConfig = getConfig()
   const options: RequestOptions = {
@@ -19,25 +19,23 @@ async function graphqlRequest(query: string): Promise<Record<string, unknown>> {
     },
   }
 
-  const response = await new Promise<{ data: Record<string, unknown> }>(
-    (resolve, reject) => {
-      let body = ""
-      const req = https.request(options, (res) => {
-        res.setEncoding("utf8")
-        res.on("data", (chunk) => (body += chunk))
-        res.on("end", () => {
-          if (res.statusCode !== undefined && res.statusCode < 400) {
-            resolve(JSON.parse(body))
-          } else {
-            reject(JSON.parse(body))
-          }
-        })
+  const response = await new Promise<{ data: T }>((resolve, reject) => {
+    let body = ""
+    const req = https.request(options, (res) => {
+      res.setEncoding("utf8")
+      res.on("data", (chunk) => (body += chunk))
+      res.on("end", () => {
+        if (res.statusCode !== undefined && res.statusCode < 400) {
+          resolve(JSON.parse(body))
+        } else {
+          reject(JSON.parse(body))
+        }
       })
-      req.on("error", (e) => reject(e))
-      req.write(payload)
-      req.end()
-    }
-  )
+    })
+    req.on("error", (e) => reject(e))
+    req.write(payload)
+    req.end()
+  })
 
   return response.data
 }
@@ -117,7 +115,7 @@ export type Pr = {
 }
 type Prs = Pr[]
 export async function getMyPrs(): Promise<Prs> {
-  const response = (await graphqlRequest(myPrsQuery)) as MyPrsQueryResponse
+  const response = await graphqlRequest<MyPrsQueryResponse>(myPrsQuery)
 
   if (response.viewer.pullRequests.totalCount > PRS_RESULTS_TO_FETCH) {
     logger().debug(
@@ -173,12 +171,10 @@ type ReviewRequestedPrsQueryResponse = InvolvedPrsQueryResponse
 
 async function internalGetReviewsAndInvolvedPrs() {
   const tooManyResultsMessage = `Only returning first ${PRS_RESULTS_TO_FETCH} results of`
-  const involved = (await graphqlRequest(
-    involvedPrsQuery
-  )) as InvolvedPrsQueryResponse
-  const reviews = (await graphqlRequest(
-    reviewRequestedPrsQuery
-  )) as ReviewRequestedPrsQueryResponse
+  const [involved, reviews] = await Promise.all([
+    graphqlRequest<InvolvedPrsQueryResponse>(involvedPrsQuery),
+    graphqlRequest<ReviewRequestedPrsQueryResponse>(reviewRequestedPrsQuery),
+  ])
 
   if (involved.search.issueCount > PRS_RESULTS_TO_FETCH) {
     logger().debug(`${tooManyResultsMessage} ${involved.search.issueCount}`)
@@ -246,7 +242,8 @@ function getReposQuery(cursor: string | undefined) {
   }
 }`
 }
-export interface ReposQueryResponse {
+
+export type ReposQueryResponse = {
   viewer: {
     repositories: {
       pageInfo: {
@@ -273,10 +270,8 @@ export async function getRepos(): Promise<Repos> {
 
   const repos: Repos = []
   while (hasNextPage) {
-    const res = (await graphqlRequest(
-      getReposQuery(cursor)
-    )) as unknown as ReposQueryResponse
-
+    const query = getReposQuery(cursor)
+    const res = await graphqlRequest<ReposQueryResponse>(query)
     const data = res.viewer.repositories
     repos.push(...data.nodes)
     cursor = data.pageInfo.endCursor
