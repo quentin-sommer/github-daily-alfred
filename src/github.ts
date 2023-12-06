@@ -51,6 +51,7 @@ const prsPartialQuery = `{
     nameWithOwner
   }
   url
+  viewerSubscription
   reviews(
     first: 10
     author: "${getConfig().githubUsername}"
@@ -87,6 +88,7 @@ type PrPartialResponse = {
     nameWithOwner: string
   }
   url: string
+  viewerSubscription: "UNSUBSCRIBED" | "SUBSCRIBED" | "IGNORED"
   reviews: {
     nodes: {
       state: "APPROVED"
@@ -208,8 +210,14 @@ async function internalGetReviewsAndInvolvedPrs() {
 export async function getActionableReviews(): Promise<Prs> {
   return (
     (await internalGetReviewsAndInvolvedPrs())
-      // Keep PRs without approved reviews by current user
-      .filter((pr) => pr.reviews.nodes.length === 0)
+      /* Keep PRs without approved reviews by current user
+       * and not unsubscribed
+       */
+      .filter(
+        (pr) =>
+          pr.reviews.nodes.length === 0 &&
+          pr.viewerSubscription === "SUBSCRIBED"
+      )
       .map(prMapper)
   )
 }
