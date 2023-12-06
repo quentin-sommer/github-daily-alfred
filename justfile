@@ -57,6 +57,9 @@ _build arch: clean
   cd {{build_directory}} && \
     {{justfile_directory()}}/node_modules/.bin/pkg . \
     --targets latest-macos-{{arch}}
+  cd {{build_directory}} && rm \
+    index.js \
+    package.json
 
 # Create alfred workflow export file
 _package arch: (_build arch)
