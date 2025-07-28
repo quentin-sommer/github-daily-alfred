@@ -136,10 +136,10 @@ export async function getMyPrs(): Promise<Prs> {
 const reviewRequestedPrsQuery = `{
   search(
     first: ${PRS_RESULTS_TO_FETCH}
-    query: "is:pr is:open sort:updated review-requested:${
+    query: "is:pr is:open archived:false sort:updated review-requested:${
       getConfig().githubUsername
     }"
-    type: ISSUE    
+    type: ISSUE
   ) {
     issueCount
     nodes {
@@ -151,10 +151,10 @@ const reviewRequestedPrsQuery = `{
 const involvedPrsQuery = `{
   search(
     first: ${PRS_RESULTS_TO_FETCH}
-    query: "is:pr state:open sort:updated -author:${
+    query: "is:pr is:open archived:false sort:updated -author:${
       getConfig().githubUsername
     } involves:${getConfig().githubUsername}"
-    type: ISSUE    
+    type: ISSUE
   ) {
     issueCount
     nodes {

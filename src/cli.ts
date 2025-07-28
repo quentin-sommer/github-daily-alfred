@@ -155,6 +155,7 @@ type Item = {
   uid?: string | undefined
   title: string
   subtitle: string
+  autocomplete?: string
   arg?: string
   icon?: {
     path: string
@@ -175,6 +176,7 @@ export async function repos(runningInBackground: boolean, filter?: string) {
         uid: getConfig().disableAlfredReordering === "0" ? repo.id : undefined,
         title: repo.nameWithOwner,
         subtitle: repo.url,
+        autocomplete: repo.nameWithOwner,
         arg: repo.url,
         valid: true,
       }))
@@ -210,7 +212,7 @@ export async function menu(_runningInBackground: boolean, _filter?: string) {
   const customItems: Item[] = (
     JSON.parse(getConfig().customQuickLinks) as { title: string; arg: string }[]
   ).map((link) => ({ title: link.title, arg: link.arg, subtitle: link.arg }))
-  output(customItems.concat(items))
+  output(items.concat(customItems))
 }
 
 export function output(data: Item[], reRun: boolean = false) {

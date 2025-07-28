@@ -48,7 +48,7 @@ _build arch: clean
     --out={{build_directory}} \
     src/index.ts
   # Extra files created by pino
-  cd {{build_directory}} && rm \
+  cd {{build_directory}} && rm -f \
     file.js \
     worker.js \
     worker1.js \
