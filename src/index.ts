@@ -1,5 +1,5 @@
 import { menu, outputError, prs, repos, reviews, involved } from "./cli"
-import { detailed } from "yargs-parser"
+import yargsParser from "yargs-parser"
 import type { Maybe } from "./utils"
 import { initLogger, logger } from "./logger"
 import { getConfig } from "./config"
@@ -23,7 +23,7 @@ function parseArgs(args: string[]): {
   filter: string | undefined
   runningInBackground: boolean | undefined
 } {
-  const parsed = detailed(args, {
+  const parsed = yargsParser.detailed(args, {
     coerce: {
       command: (arg) => {
         if (commands.includes(arg)) {

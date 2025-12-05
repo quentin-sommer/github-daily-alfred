@@ -5,11 +5,13 @@ import { readFileSync, rmSync, writeFileSync } from "fs"
 import { errorIsFileNotExists } from "./utils"
 import { logger } from "./logger"
 
-const ENTRYPOINT = resolve(__dirname, "index.js")
 export function runInBackground(command: Command, cacheDir: string) {
+  // In compiled Bun binary, process.execPath is the binary itself
+  const args = [`--command=${command}`, "--background"]
+
   const bgProcess = spawn(
     process.execPath,
-    [ENTRYPOINT, `--command=${command}`, "--background"],
+    process.argv[1] ? [process.argv[1], ...args] : args,
     {
       detached: true,
       stdio: "ignore",
