@@ -3,8 +3,8 @@ import {
   getInvolvedPrs,
   getMyPrs,
   getRepos,
-  Pr,
 } from "./github"
+import type { Pr } from "./github"
 import { Cache } from "./cache"
 import cleanStack from "clean-stack"
 import type { Command } from "./index"
