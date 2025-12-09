@@ -20,46 +20,29 @@ build: build-arm
 package: (_package "arm64") (_package "x64")
 
 dev: clean
-  ./node_modules/.bin/ncc build \
-    --out={{build_directory}} \
-    --source-map \
-    --watch \
-    src/index.ts
+  mkdir -p {{build_directory}}
+  bun --watch src/index.ts -- \
+    --command=menu \
+    --filter=""
 
 run *args:
-  /usr/bin/time -h node {{build_directory}}/index.js {{args}}
+  bun src/index.ts {{args}}
 
 run-bg-task command:
-  node {{build_directory}}/index.js --command={{command}} --background
+  bun src/index.ts --command={{command}} --background
 
 # Run packaged app
 run-prod *args:
-  /usr/bin/time {{build_directory}}/github-daily {{args}}
+  /usr/bin/time -h {{build_directory}}/github-daily {{args}}
 
-analyze: build
-  ./node_modules/.bin/webpack-bundle-analyzer {{build_directory}}/stats.json
-
-# Compile with ncc. Package with pkg
+# Compile with bun
 _build arch: clean
-  ./node_modules/.bin/ncc build \
+  mkdir -p {{build_directory}}
+  bun build ./src/index.ts \
+    --compile \
     --minify \
-    --target=es2021 \
-    --stats-out={{build_directory / "stats.json"}} \
-    --out={{build_directory}} \
-    src/index.ts
-  # Extra files created by pino
-  cd {{build_directory}} && rm -f \
-    file.js \
-    worker.js \
-    worker1.js \
-    worker-pipeline.js
-  cp package.compile.json {{build_directory}}/package.json
-  cd {{build_directory}} && \
-    {{justfile_directory()}}/node_modules/.bin/pkg . \
-    --targets latest-macos-{{arch}}
-  cd {{build_directory}} && rm \
-    index.js \
-    package.json
+    --target=bun-darwin-{{arch}} \
+    --outfile={{build_directory}}/github-daily
 
 # Create alfred workflow export file
 _package arch: (_build arch)
@@ -68,7 +51,6 @@ _package arch: (_build arch)
 
   rsync -r \
     --exclude=prefs.plist \
-    --exclude=stats.json \
     workflow/* tmp/workflow-{{arch}}
 
   # re-ignore to be extra safe
