@@ -1,9 +1,10 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "lib": ["es2021"],
-    "module": "commonjs",
-    "target": "es2021",
+    "lib": ["ESNext"],
+    "module": "Preserve",
+    "moduleDetection": "force",
+    "target": "ESNext",
     "strict": true,
     // Turn on if you want accurate source map in dev
     "sourceMap": false,
@@ -20,6 +21,9 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true
   }
 }

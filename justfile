@@ -15,9 +15,12 @@ build-arm: (_build "arm64")
 
 build-x64: (_build "x64")
 
-build: build-arm
+build: lint build-arm
 
 package: (_package "arm64") (_package "x64")
+
+lint:
+  bun tsc --noEmit
 
 dev: clean
   mkdir -p {{build_directory}}

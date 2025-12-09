@@ -1,4 +1,5 @@
-import pino, { Logger } from "pino"
+import pino from "pino"
+import type { Logger } from "pino"
 import SonicBoom from "sonic-boom"
 import { getConfig } from "./config"
 import { mkdirSync } from "fs"

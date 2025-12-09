@@ -1,6 +1,7 @@
 import { logger } from "./logger"
 import { getConfig } from "./config"
-import https, { RequestOptions } from "https"
+import https from "https"
+import type { RequestOptions } from "https"
 import { DateTime } from "luxon"
 
 async function graphqlRequest<T>(query: string): Promise<T> {
