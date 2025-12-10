@@ -4,6 +4,13 @@
 
 See [releases](https://github.com/quentin-sommer/github-daily-alfred/releases) to download workflow file.
 
+⚠️ before running you need to manually allow the binary to be executed.
+You must mark the workflow (and the contained) as runnable like this: 
+
+```bash
+xattr -cr ~/Downloads/github-daily-arm64.alfredworkflow 
+```
+
 ## Configuration
 
 ### User configuration
@@ -16,15 +23,6 @@ often for example. Format: JSON array like
 `[{"title": "My title", "arg": "https://destination.com"}]`
 
 ### Running the workflow
-
-#### First run
-
-⚠️ The first time you'll run the workflow you will get a warning from Apple saying that the binary cannot be run.
-You must mark the binary as runnable like this: right click on the `dist/github-daily` file and click "open". It will
-run with an error because it expects options but now Apple will allow you to run it.
-
-The binary is in the `dist` folder inside the workflow directory. To open the workflow directory: right click the
-workflow in the list -&gt; open in finder
 
 #### Usage
 
